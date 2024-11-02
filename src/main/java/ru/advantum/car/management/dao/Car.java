@@ -1,23 +1,19 @@
 package ru.advantum.car.management.dao;
 
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "cars")
@@ -47,6 +43,11 @@ public class Car {
     @Column(nullable = false)
     LocalDate productionDate;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Ownership> ownershipHistory;
+    @Setter
+    @ManyToMany
+    @JoinTable(name = "ownerships",
+            joinColumns = @JoinColumn(name = "carId"),
+            inverseJoinColumns = @JoinColumn(name = "owner_id"))
+    private Set<Ownership> ownerships = new LinkedHashSet<>();
+
 }
