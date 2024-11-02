@@ -1,16 +1,15 @@
 package ru.advantum.car.management.dto;
 
-import org.mapstruct.BeanMapping;
+import org.mapstruct.DecoratedWith;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.Mapping;
 import ru.advantum.car.management.dao.Owner;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper
+@DecoratedWith(OwnerMapperDecorator.class)
 public interface OwnerMapper {
     Owner toEntity(OwnerDto ownerDto);
 
+    @Mapping(target = "ownership", ignore = true)
     OwnerDto toDto(Owner owner);
 }
