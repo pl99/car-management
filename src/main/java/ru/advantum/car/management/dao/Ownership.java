@@ -21,16 +21,14 @@ public class Ownership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-//    @ManyToOne
-//    @JoinColumn(name = "car_id", nullable = false)
-//    Car car;
     Long carId;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
-    Owner owner;
+//    @ManyToOne
+//    @JoinColumn(name = "owner_id", nullable = false)
+//    Owner owner;
 
-//    Long ownerId;
+    @Column(name = "owner_id", nullable = false)
+    Long ownerId;
 
     @Column(nullable = false)
     LocalDate purchaseDate;

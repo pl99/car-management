@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 import ru.advantum.car.management.dao.Car;
 import ru.advantum.car.management.dao.CarRepository;
+import ru.advantum.car.management.dto.CarDto;
+import ru.advantum.car.management.dto.CarMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +33,13 @@ import java.util.Optional;
 public class CarController {
 
     private final CarRepository carRepository;
+    private final CarMapper mapper;
 
     private final ObjectPatcher objectPatcher;
 
     @GetMapping
-    public Page<Car> getList(@ParameterObject Pageable pageable) {
-        return carRepository.findAll(pageable);
+    public List<CarDto> getList() {
+        return mapper.toDtos(carRepository.findAll());
     }
 
     @GetMapping("/{id}")

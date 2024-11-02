@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 import ru.advantum.car.management.dao.Owner;
 import ru.advantum.car.management.dao.OwnerRepository;
+import ru.advantum.car.management.dto.OwnerDto;
+import ru.advantum.car.management.dto.OwnerMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +32,14 @@ import java.util.Optional;
 public class OwnerController {
 
     private final OwnerRepository ownerRepository;
-
+    OwnerMapper mapper;
     private final ObjectPatcher objectPatcher;
 
     @GetMapping
-    public Page<Owner> getList(@ParameterObject Pageable pageable) {
-        return ownerRepository.findAll(pageable);
+    public List<OwnerDto> getList() {
+        return ownerRepository.findAll().stream()
+                .map(it->mapper.toDto(it))
+                .toList();
     }
 
     @GetMapping("/{id}")

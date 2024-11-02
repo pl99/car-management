@@ -43,11 +43,5 @@ public class Car {
     @Column(nullable = false)
     LocalDate productionDate;
 
-    @Setter
-    @ManyToMany
-    @JoinTable(name = "ownerships",
-            joinColumns = @JoinColumn(name = "carId"),
-            inverseJoinColumns = @JoinColumn(name = "owner_id"))
-    private Set<Ownership> ownerships = new LinkedHashSet<>();
 
 }
