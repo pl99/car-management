@@ -32,7 +32,7 @@ import java.util.Optional;
 public class OwnerController {
 
     private final OwnerRepository ownerRepository;
-    OwnerMapper mapper;
+    private final OwnerMapper mapper;
     private final ObjectPatcher objectPatcher;
 
     @GetMapping
@@ -55,8 +55,8 @@ public class OwnerController {
     }
 
     @PostMapping
-    public Owner create(@RequestBody Owner owner) {
-        return ownerRepository.save(owner);
+    public OwnerDto create(@RequestBody Owner owner) {
+        return mapper.toDto(ownerRepository.save(owner));
     }
 
     @PatchMapping("/{id}")
