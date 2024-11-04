@@ -77,6 +77,15 @@
             <artifactId>react-admin-utils-starter</artifactId>
             <version>0.2.0</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>ru.advantum.commons</groupId>
+            <artifactId>advantum-commons-mvc-test</artifactId>
+            <version>1.0.4-RELEASE</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
