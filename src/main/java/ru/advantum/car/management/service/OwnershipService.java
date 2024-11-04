@@ -6,16 +6,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import ru.advantum.car.management.dao.Ownership;
 import ru.advantum.car.management.dao.OwnershipRepository;
@@ -25,7 +18,6 @@ import ru.advantum.car.management.dto.PurchaseCarDto;
 import ru.advantum.car.management.dto.PurchaseCarMapper;
 import ru.advantum.car.management.dto.SellCarDto;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +31,7 @@ public class OwnershipService {
     OwnershipMapper mapper;
     PurchaseCarMapper purchaseCarMapper;
 
+    //<editor-fold desc="скрою, чтобы не затемнять ">
     public List<OwnershipDto> getList() {
         return ownershipRepository.findAll()
                 .stream()
@@ -59,6 +52,7 @@ public class OwnershipService {
         ownership = objectPatcher.patchAndValidate(ownership, patchNode);
         return mapper.toDto(ownershipRepository.save(ownership));
     }
+    //</editor-fold>
 
     @Transactional
     public OwnershipDto sell(SellCarDto dto) {
@@ -74,6 +68,16 @@ public class OwnershipService {
         Ownership ownership = ownershipRepository.save(sell);
 
         return mapper.toDto(ownership);
+    }
+
+    @Transactional
+    public OwnershipDto selfSell(SellCarDto dto){
+        Ownership ownership = Ownership.builder().build().findForSale(dto);
+        // Бизнеслогика
+        Ownership sell = ownership.toBuilder().saleDate(dto.getSellDate()).build();
+
+        Ownership saved = sell.save();
+        return saved.toDto();
     }
 
 

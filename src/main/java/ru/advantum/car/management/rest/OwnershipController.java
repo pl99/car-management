@@ -1,32 +1,23 @@
 package ru.advantum.car.management.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.amplicode.rautils.patch.ObjectPatcher;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.server.ResponseStatusException;
-import ru.advantum.car.management.dao.Ownership;
-import ru.advantum.car.management.dao.OwnershipRepository;
+import org.springframework.web.bind.annotation.RestController;
 import ru.advantum.car.management.dto.OwnershipDto;
 import ru.advantum.car.management.dto.PurchaseCarDto;
 import ru.advantum.car.management.dto.SellCarDto;
 import ru.advantum.car.management.service.OwnershipService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/ownerships")
@@ -43,7 +34,7 @@ public class OwnershipController {
 
     @PostMapping("sell")
     public ResponseEntity<OwnershipDto> sell(@RequestBody SellCarDto dto){
-        return ResponseEntity.ok(service.sell(dto));
+        return ResponseEntity.ok(service.selfSell(dto));
     }
 
     @GetMapping

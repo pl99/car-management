@@ -1,9 +1,23 @@
 package ru.advantum.car.management.dao;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.advantum.car.management.dto.OwnershipDto;
+import ru.advantum.car.management.dto.OwnershipMapper;
+import ru.advantum.car.management.dto.SellCarDto;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -22,10 +36,6 @@ public class Ownership {
     Long id;
 
     Long carId;
-
-//    @ManyToOne
-//    @JoinColumn(name = "owner_id", nullable = false)
-//    Owner owner;
 
     @Column(name = "owner_id", nullable = false)
     Long ownerId;
@@ -51,4 +61,43 @@ public class Ownership {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+    public Ownership findForSale(SellCarDto dto) {
+        return Repository.repository.findAllByOwnerId(dto.getOwnerId())
+                .stream()
+                .filter(it -> it.getCarId().equals(dto.getCarId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("car not found in this ownership!"));
+    }
+
+    public Ownership save() {
+        return Repository.repository.saveAndFlush(this);
+    }
+
+
+    public OwnershipDto toDto() {
+        return Mapper.mapper.toDto(this);
+    }
+
+
+    @Component("dddRepositoryOwnership")
+    private static class Repository {
+        private static OwnershipRepository repository;
+
+        @Autowired
+        void setRepository(OwnershipRepository component) {
+            repository = component;
+        }
+    }
+
+    @Component("dddMapperOwnership")
+    private static class Mapper {
+        private static OwnershipMapper mapper;
+
+        @Autowired
+        void setMapper(OwnershipMapper component) {
+            mapper = component;
+        }
+    }
+
 }
