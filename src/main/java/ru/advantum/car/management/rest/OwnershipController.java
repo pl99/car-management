@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 import ru.advantum.car.management.dao.Ownership;
 import ru.advantum.car.management.dao.OwnershipRepository;
+import ru.advantum.car.management.dto.PurchaseCarDto;
+import ru.advantum.car.management.dto.SellCarDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,14 @@ public class OwnershipController {
     private final OwnershipRepository ownershipRepository;
 
     private final ObjectPatcher objectPatcher;
+
+    public ResponseEntity<Ownership> purchase(@RequestBody PurchaseCarDto dto){
+        return null;
+    }
+
+    public ResponseEntity<Ownership> sell(@RequestBody SellCarDto dto){
+        return null;
+    }
 
     @GetMapping
     public ResponseEntity<List<Ownership>> getList() {
