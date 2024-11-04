@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.amplicode.rautils.patch.ObjectPatcher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,18 +32,18 @@ public class OwnershipController {
     private final ObjectPatcher objectPatcher;
 
     @GetMapping
-    public List<Ownership> getList() {
-        return ownershipRepository.findAll();
+    public ResponseEntity<List<Ownership>> getList() {
+        return ResponseEntity.ok(ownershipRepository.findAll());
     }
 
     @GetMapping("{idOwner}")
-    public List<Ownership> getListByOwner(@PathVariable Long idOwner) {
-        return ownershipRepository.findAllByOwnerId(idOwner);
+    public ResponseEntity<List<Ownership>> getListByOwner(@PathVariable Long idOwner) {
+        return ResponseEntity.ok(ownershipRepository.findAllByOwnerId(idOwner));
     }
 
     @GetMapping("/by-ids")
-    public List<Ownership> getMany(@RequestParam List<Long> ids) {
-        return ownershipRepository.findAllById(ids);
+    public ResponseEntity<List<Ownership>> getMany(@RequestParam List<Long> ids) {
+        return ResponseEntity.ok(ownershipRepository.findAllById(ids));
     }
 
     @PostMapping
@@ -61,28 +62,29 @@ public class OwnershipController {
     }
 
     @PatchMapping
-    public List<Long> patchMany(@RequestParam List<Long> ids, @RequestBody JsonNode patchNode) {
+    public ResponseEntity<List<Long>> patchMany(@RequestParam List<Long> ids, @RequestBody JsonNode patchNode) {
         List<Ownership> ownerships = new ArrayList<>(ownershipRepository.findAllById(ids));
 
         ownerships.replaceAll(ownership -> objectPatcher.patchAndValidate(ownership, patchNode));
 
         List<Ownership> resultOwnerships = ownershipRepository.saveAll(ownerships);
-        return resultOwnerships.stream()
+        return ResponseEntity.ok(resultOwnerships.stream()
                 .map(Ownership::getId)
-                .toList();
+                .toList());
     }
 
     @DeleteMapping("/{id}")
-    public Ownership delete(@PathVariable Long id) {
+    public ResponseEntity<Ownership> delete(@PathVariable Long id) {
         Ownership ownership = ownershipRepository.findById(id).orElse(null);
         if (ownership != null) {
             ownershipRepository.delete(ownership);
         }
-        return ownership;
+        return ResponseEntity.ok(ownership);
     }
 
     @DeleteMapping
-    public void deleteMany(@RequestParam List<Long> ids) {
+    public ResponseEntity<Void> deleteMany(@RequestParam List<Long> ids) {
         ownershipRepository.deleteAllById(ids);
+        return ResponseEntity.ok().build();
     }
 }
