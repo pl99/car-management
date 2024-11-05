@@ -47,6 +47,4 @@ public class Car {
     @Column(nullable = false)
     LocalDate productionDate;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<Ownership> ownershipHistory;
 }
