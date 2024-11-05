@@ -63,7 +63,7 @@ public class OwnershipService {
                 .orElseThrow(()->new IllegalArgumentException("car not found in this ownership!"));
 
         // Бизнеслогика
-        Ownership sell = os.toBuilder().saleDate(dto.getSellDate()).build();
+        Ownership sell = os.toBuilder().saleDate(dto.getSaleDate()).build();
 
         Ownership ownership = ownershipRepository.save(sell);
 
@@ -74,10 +74,16 @@ public class OwnershipService {
     public OwnershipDto selfSell(SellCarDto dto){
         Ownership ownership = Ownership.builder().build().findForSale(dto);
         // Бизнеслогика
-        Ownership sell = ownership.toBuilder().saleDate(dto.getSellDate()).build();
+        Ownership sell = ownership.toBuilder().saleDate(dto.getSaleDate()).build();
 
         Ownership saved = sell.save();
         return saved.toDto();
+    }
+
+    @Transactional
+    public OwnershipDto simpleSale(SellCarDto dto){
+        Ownership ownership = dto.makeOwnership();
+        return ownership.sale();
     }
 
 

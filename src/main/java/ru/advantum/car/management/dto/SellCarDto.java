@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.advantum.car.management.dao.Ownership;
 
 import java.time.LocalDate;
 
@@ -17,5 +20,23 @@ import java.time.LocalDate;
 public class SellCarDto {
     Long carId;
     Long ownerId;
-    LocalDate sellDate;
+    LocalDate saleDate;
+
+    public Ownership makeOwnership() {
+        return Mapper.mapper.toOwnership(this);
+    }
+
+    @Component("dddMapperSellCarDto")
+    private static class Mapper {
+        private static SellCarDtoMapper mapper;
+
+        @Autowired
+        void setMapper(SellCarDtoMapper component) {
+            mapper = component;
+        }
+    }
+
+    void setMapper(SellCarDtoMapper mapper){
+        Mapper.mapper=mapper;
+    }
 }

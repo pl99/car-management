@@ -34,7 +34,7 @@ public class OwnershipControllerTest extends BaseControllerTest {
                 {
                   "carId": 5,
                   "ownerId": 1,
-                  "sellDate": "2024-11-04"
+                  "saleDate": "2024-11-04"
                 }""";
 
         mockPostRequest(sell, dto);

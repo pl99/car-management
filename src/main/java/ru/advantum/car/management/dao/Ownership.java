@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "ownerships")
-@Getter
+@Getter @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
@@ -35,6 +36,7 @@ public class Ownership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Column(name = "car_id", nullable = false)
     Long carId;
 
     @Column(name = "owner_id", nullable = false)
@@ -62,7 +64,27 @@ public class Ownership {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 
-    public Ownership findForSale(SellCarDto dto) {
+    public OwnershipDto sale(SellCarDto dto) {
+        Ownership forSale = findForSale(dto)
+                .toBuilder().saleDate(dto.getSaleDate()).build();
+        return forSale.save().toDto();
+
+    }
+
+    public OwnershipDto sale() {
+//        LocalDate saledate = this.saleDate;
+        Ownership forSale = findForSale().toBuilder()
+                .saleDate(this.saleDate)
+                .build();
+        return Mapper.mapper.toDto(forSale.save());
+    }
+
+    public Ownership findForSale() {
+        return Repository.repository.findAllByOwnerIdAndCarIdAndSaleDateNull(this.getOwnerId(), this.getCarId())
+                .orElseThrow(() -> new IllegalArgumentException("car not found in this ownership!"));
+    }
+
+    public Ownership  findForSale(SellCarDto dto) {
         return Repository.repository.findAllByOwnerId(dto.getOwnerId())
                 .stream()
                 .filter(it -> it.getCarId().equals(dto.getCarId()))

@@ -10,4 +10,6 @@ public interface OwnershipRepository extends JpaRepository<Ownership, Long> {
 
 
     Optional<Ownership> findByCarIdAndOwnerIdAndSaleDateNull(Long carId, Long ownerId);
+
+    Optional<Ownership> findAllByOwnerIdAndCarIdAndSaleDateNull(Long ownerId, Long carId);
 }

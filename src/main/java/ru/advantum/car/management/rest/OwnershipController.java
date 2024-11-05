@@ -34,7 +34,7 @@ public class OwnershipController {
 
     @PostMapping("sell")
     public ResponseEntity<OwnershipDto> sell(@RequestBody SellCarDto dto){
-        return ResponseEntity.ok(service.selfSell(dto));
+        return ResponseEntity.ok(service.simpleSale(dto));
     }
 
     @GetMapping
