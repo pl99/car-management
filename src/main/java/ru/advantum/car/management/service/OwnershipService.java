@@ -89,16 +89,18 @@ public class OwnershipService {
 
     @Transactional
     public OwnershipDto purchase(PurchaseCarDto dto) {
-        Optional<Ownership> os = ownershipRepository.findByCarIdAndOwnerIdAndSaleDateNull(dto.getCarId(), dto.getOwnerId());
-        if(os.isPresent()){
-            throw new IllegalArgumentException("car not selled yet!");
-        }
-
+//        Ownership ownership = purchaseCarMapper.toOwnership(dto);
+        Ownership ownership = dto.toOwnership();
+//        Optional<Ownership> os = ownershipRepository.findByCarIdAndOwnerIdAndSaleDateNull(dto.getCarId(), dto.getOwnerId());
+//        if(os.isPresent()){
+//            throw new IllegalArgumentException("car not selled yet!");
+//        }
+//
+//
+//        Ownership saved = ownershipRepository.saveAndFlush(ownership);
+//
+//        return mapper.toDto(saved);
         // Бизнеслогика
-        Ownership ownership = purchaseCarMapper.toOwnership(dto);
-
-        Ownership saved = ownershipRepository.saveAndFlush(ownership);
-
-        return mapper.toDto(saved);
+        return ownership.purchase();
     }
 }

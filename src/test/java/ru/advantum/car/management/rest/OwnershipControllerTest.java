@@ -1,6 +1,7 @@
 package ru.advantum.car.management.rest;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MvcResult;
@@ -10,6 +11,7 @@ import ru.advantum.commons.test.mvc.BaseControllerTest;
 /**
  * Test class for the {@link OwnershipController}
  */
+@Slf4j
 public class OwnershipControllerTest extends BaseControllerTest {
 
         private final String purchase = "/rest/ownerships/purchase";
@@ -50,14 +52,18 @@ public class OwnershipControllerTest extends BaseControllerTest {
 
     @SneakyThrows
     private void assertSale(MvcResult result) {
-        boolean contains = result.getResponse().getContentAsString().contains("\"saleDate\":\"2024-11-04\"");
+        String content = result.getResponse().getContentAsString();
+        boolean contains = content.contains("\"saleDate\":\"2024-11-04\"");
+        log.info(content);
         Assertions.assertTrue(contains);
 
     }
 
     @SneakyThrows
     private void assertPurchase(MvcResult result) {
-        boolean contains = result.getResponse().getContentAsString().contains("\"purchaseDate\":\"2024-11-04\"");
+        String content = result.getResponse().getContentAsString();
+        boolean contains = content.contains("\"purchaseDate\":\"2024-11-04\"");
+        log.info(content);
         Assertions.assertTrue(contains);
     }
 

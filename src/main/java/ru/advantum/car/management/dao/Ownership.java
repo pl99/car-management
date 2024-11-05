@@ -22,10 +22,12 @@ import ru.advantum.car.management.dto.SellCarDto;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "ownerships")
-@Getter @ToString
+@Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
@@ -72,7 +74,6 @@ public class Ownership {
     }
 
     public OwnershipDto sale() {
-//        LocalDate saledate = this.saleDate;
         Ownership forSale = findForSale().toBuilder()
                 .saleDate(this.saleDate)
                 .build();
@@ -84,7 +85,7 @@ public class Ownership {
                 .orElseThrow(() -> new IllegalArgumentException("car not found in this ownership!"));
     }
 
-    public Ownership  findForSale(SellCarDto dto) {
+    public Ownership findForSale(SellCarDto dto) {
         return Repository.repository.findAllByOwnerId(dto.getOwnerId())
                 .stream()
                 .filter(it -> it.getCarId().equals(dto.getCarId()))
@@ -101,6 +102,17 @@ public class Ownership {
         return Mapper.mapper.toDto(this);
     }
 
+    private void checkWasSell() {
+        Optional<Ownership> os = Repository.repository.findByCarIdAndOwnerIdAndSaleDateNull(this.getCarId(), this.getOwnerId());
+        if (os.isPresent()) {
+            throw new IllegalArgumentException("car not selled yet!");
+        }
+    }
+
+    public OwnershipDto purchase() {
+        checkWasSell();
+        return Mapper.mapper.toDto(save());
+    }
 
     @Component("dddRepositoryOwnership")
     private static class Repository {
