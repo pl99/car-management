@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
 
-@Entity
+    @Entity
 @Table(name = "ownerships")
 @Getter
 @ToString
@@ -32,106 +32,109 @@ import java.util.Optional;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Ownership {
+    public class Ownership {
+        //<editor-fold>
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+        @Column(name = "car_id", nullable = false)
+        Long carId;
 
-    @Column(name = "car_id", nullable = false)
-    Long carId;
+        @Column(name = "owner_id", nullable = false)
+        Long ownerId;
 
-    @Column(name = "owner_id", nullable = false)
-    Long ownerId;
+        @Column(nullable = false)
+        LocalDate purchaseDate;
 
-    @Column(nullable = false)
-    LocalDate purchaseDate;
+        @Column
+        LocalDate saleDate;
 
-    @Column
-    LocalDate saleDate;
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        Ownership ownership = (Ownership) o;
-        return getId() != null && Objects.equals(getId(), ownership.getId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
-
-    public OwnershipDto sale(SellCarDto dto) {
-        Ownership forSale = findForSale(dto)
-                .toBuilder().saleDate(dto.getSaleDate()).build();
-        return forSale.save().toDto();
-
-    }
-
-    public OwnershipDto sale() {
-        Ownership forSale = findForSale().toBuilder()
-                .saleDate(this.saleDate)
-                .build();
-        return Mapper.mapper.toDto(forSale.save());
-    }
-
-    public Ownership findForSale() {
-        return Repository.repository.findAllByOwnerIdAndCarIdAndSaleDateNull(this.getOwnerId(), this.getCarId())
-                .orElseThrow(() -> new IllegalArgumentException("car not found in this ownership!"));
-    }
-
-    public Ownership findForSale(SellCarDto dto) {
-        return Repository.repository.findAllByOwnerId(dto.getOwnerId())
-                .stream()
-                .filter(it -> it.getCarId().equals(dto.getCarId()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("car not found in this ownership!"));
-    }
-
-    public Ownership save() {
-        return Repository.repository.saveAndFlush(this);
-    }
-
-
-    public OwnershipDto toDto() {
-        return Mapper.mapper.toDto(this);
-    }
-
-    private void checkWasSell() {
-        Optional<Ownership> os = Repository.repository.findByCarIdAndOwnerIdAndSaleDateNull(this.getCarId(), this.getOwnerId());
-        if (os.isPresent()) {
-            throw new IllegalArgumentException("car not selled yet!");
+        @Override
+        public final boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null) return false;
+            Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+            Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+            if (thisEffectiveClass != oEffectiveClass) return false;
+            Ownership ownership = (Ownership) o;
+            return getId() != null && Objects.equals(getId(), ownership.getId());
         }
-    }
 
-    public OwnershipDto purchase() {
-        checkWasSell();
-        return Mapper.mapper.toDto(save());
-    }
-
-    @Component("dddRepositoryOwnership")
-    private static class Repository {
-        private static OwnershipRepository repository;
-
-        @Autowired
-        void setRepository(OwnershipRepository component) {
-            repository = component;
+        @Override
+        public final int hashCode() {
+            return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
         }
-    }
 
-    @Component("dddMapperOwnership")
-    private static class Mapper {
-        private static OwnershipMapper mapper;
+        public OwnershipDto sale(SellCarDto dto) {
+            Ownership forSale = findForSale(dto)
+                    .toBuilder().saleDate(dto.getSaleDate()).build();
+            return forSale.save().toDto();
 
-        @Autowired
-        void setMapper(OwnershipMapper component) {
-            mapper = component;
         }
-    }
+        //</editor-fold>
 
-}
+        public OwnershipDto sale() {
+            Ownership forSale = this.toBuilder()
+                    .saleDate(this.saleDate)
+                    .build();
+            return Mapper.mapper.toDto(forSale.save());
+        }
+
+        //<editor-fold>
+        public Ownership findForSale() {
+            return Repository.repository.findAllByOwnerIdAndCarIdAndSaleDateNull(this.getOwnerId(), this.getCarId())
+                    .orElseThrow(() -> new IllegalArgumentException("car not found in this ownership!"));
+        }
+
+        public Ownership findForSale(SellCarDto dto) {
+            return Repository.repository.findAllByOwnerId(dto.getOwnerId())
+                    .stream()
+                    .filter(it -> it.getCarId().equals(dto.getCarId()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("car not found in this ownership!"));
+        }
+
+        public Ownership save() {
+            return Repository.repository.saveAndFlush(this);
+        }
+
+
+        public OwnershipDto toDto() {
+            return Mapper.mapper.toDto(this);
+        }
+
+        private void checkWasSell() {
+            Optional<Ownership> os = Repository.repository.findByCarIdAndOwnerIdAndSaleDateNull(this.getCarId(), this.getOwnerId());
+            if (os.isPresent()) {
+                throw new IllegalArgumentException("car not selled yet!");
+            }
+        }
+
+        public OwnershipDto purchase() {
+            checkWasSell();
+            return Mapper.mapper.toDto(save());
+        }
+
+        @Component("dddRepositoryOwnership")
+        private static class Repository {
+            private static OwnershipRepository repository;
+
+            @Autowired
+            void setRepository(OwnershipRepository component) {
+                repository = component;
+            }
+        }
+
+        @Component("dddMapperOwnership")
+        private static class Mapper {
+            private static OwnershipMapper mapper;
+
+            @Autowired
+            void setMapper(OwnershipMapper component) {
+                mapper = component;
+            }
+        }
+    //</editor-fold>
+
+    }
